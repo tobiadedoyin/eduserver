@@ -4,9 +4,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
-import axios from "axios";
-import cheerio from "cheerio";
-import { NlpManager } from "node-nlp";
 import {
   signupUserValidation,
   loginUserValidation,
@@ -160,83 +157,3 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-const manager = new NlpManager({ languages: ["en"] });
-
-export const userLearning = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const userInput: string = req.body.query; // Access query from req.body
-  if (!userInput) {
-    res.status(400).json({ error: "Missing query parameter." });
-    return;
-  }
-
-  try {
-    // Fetch learning content through web scraping
-    const learningContent: LearningContent | null =
-      await fetchLearningContentFromOpenStax(userInput);
-    if (!learningContent || Object.keys(learningContent).length === 0) {
-      res.json({ answer: ["I couldn't find any information on that topic."] });
-      return;
-    }
-
-    // Get the AI-guided answer for the user query
-    const response = await manager.process("en", userInput);
-    response.answer = response.answer || [];
-
-    // If the model couldn't match the query to any specific topic, provide a fallback response
-    if (response.intent === "None") {
-      response.answer.push("I couldn't find any information on that topic.");
-    }
-
-    res.json({ answer: response.answer });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-};
-
-interface LearningContent {
-  [topic: string]: string;
-}
-
-async function fetchLearningContentFromOpenStax(
-  query: string
-): Promise<LearningContent | null> {
-  try {
-    const searchUrl = `https://openstax.org/search?q=${encodeURIComponent(
-      query
-    )}`;
-    const response = await axios.get(searchUrl);
-
-    const learningContent: LearningContent = {};
-    const $ = cheerio.load(response.data);
-
-    // Example: Extract the title and description of the first search result
-    const firstSearchResult = $("a.result-link").first();
-    const title = firstSearchResult.text().trim();
-    const description = firstSearchResult
-      .find("p.result-description")
-      .text()
-      .trim();
-    learningContent[title] = description;
-
-    // Train the NLP manager with the fetched learning content
-    Object.keys(learningContent).forEach((topic) => {
-      manager.addDocument("en", `Tell me about ${topic}`, topic);
-      manager.addAnswer("en", topic, learningContent[topic]);
-    });
-
-    // Train the NLP manager
-    await manager.train();
-    manager.save();
-    console.log("Model trained and saved");
-
-    return learningContent;
-  } catch (error) {
-    console.error("Error fetching learning content from OpenStax:", error);
-    return null;
-  }
-}
