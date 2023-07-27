@@ -1,7 +1,6 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "watch": "tsc -W",
@@ -32,5 +31,13 @@
     "@types/node": "^20.4.2",
     "nodemon": "^3.0.1"
   },
-  "repository": "git@github.com:tobiadedoyin/eduserver.git"
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tobiadedoyin/eduserver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tobiadedoyin/eduserver/issues"
+  },
+  "homepage": "https://github.com/tobiadedoyin/eduserver#readme",
+  "description": ""
 }
