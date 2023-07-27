@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -W",
-    "dev": "ts-node-dev --respawn --transpile-only --pretty ./src/server.ts",
-    "start": "nodemon ./compile/server.js",
+    "build": "tsc",
+    "start": "node ./compile/server.js",
     "test": "jest"
   },
   "keywords": [],
