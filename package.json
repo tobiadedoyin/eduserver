@@ -5,8 +5,8 @@
   "scripts": {
     "watch": "tsc -W",
     "build": "tsc",
-    "dev": "nodemon ./compile/index.js",
-    "start": "node ./compile/index.js"
+    "dev": "nodemon compile/index.js",
+    "start": "node compile/index.js"
   },
   "keywords": [],
   "author": "Tobi Oladele <oladeletobiadedoyin@gmail.com>",
