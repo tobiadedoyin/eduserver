@@ -27,7 +27,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const path_1 = __importDefault(require("path"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
@@ -42,16 +41,12 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use("/users", user_route_js_1.default);
-app.use(express_1.default.static(path_1.default.join(__dirname, "..", "public")));
 mongoose_1.default
     .connect(process.env.URI)
     .then((data) => {
     console.log(`Database connected to ${data.connection.host}`);
 })
     .catch((error) => console.log(error.message));
-app.get("/", (req, res) => {
-    res.render(path_1.default.join(__dirname, "..", "public", "index.html"));
-});
 app.get("/", (req, res) => {
     return res.status(200).json({ message: "starting" });
 });
